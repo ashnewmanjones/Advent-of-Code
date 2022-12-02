@@ -56,25 +56,42 @@ pub fn process_part1(input: &str) -> String {
             }
         })
         .sum();
-
     result.to_string()
 }
 
 pub fn process_part2(input: &str) -> String {
-    let mut result = input
-        .split("\n\n")
-        .map(|elf_load| {
-            elf_load
-                .lines()
-                .map(|item| item.parse::<u32>().unwrap())
-                .sum::<u32>()
+    let result: u32 = input
+        .lines()
+        .map(|line| {
+            let moves: Vec<&str> =
+                line.split(" ").collect();
+            let opponent_move =
+                moves[0].parse::<Move>().unwrap();
+            match moves[1] {
+                "X" => {
+                    let our_move = match opponent_move {
+                        Move::Rock => Move::Scissors,
+                        Move::Paper => Move::Rock,
+                        Move::Scissors => Move::Paper,
+                    };
+                    0 + our_move as u32
+                }
+                "Y" => 3 + opponent_move as u32,
+                "Z" => {
+                    let our_move = match opponent_move {
+                        Move::Rock => Move::Paper,
+                        Move::Paper => Move::Scissors,
+                        Move::Scissors => Move::Rock,
+                    };
+                    6 + our_move as u32
+                }
+                _ => {
+                    panic!("Unexpected response");
+                }
+            }
         })
-        .collect::<Vec<_>>();
-    
-    result.sort_by(|a, b| b.cmp(a));
-    let sum: u32 = result.iter().take(3).sum();
-
-    sum.to_string()
+        .sum();
+    result.to_string()
 }
 
 #[cfg(test)]
